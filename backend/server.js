@@ -68,7 +68,8 @@ app.use(cors({
   origin: checkOrigin,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-refresh-token'],
+  exposedHeaders: ['x-new-access-token', 'x-new-refresh-token']
 }));
 app.use(cookieParser());
 app.use(express.json());
