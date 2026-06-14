@@ -15,10 +15,28 @@ connectDB();
 const app = express();
 const server = http.createServer(app);
 
+const checkOrigin = (origin, callback) => {
+  if (!origin) return callback(null, true);
+  
+  const clientUrl = process.env.CLIENT_URL;
+  const normalizedClientUrl = clientUrl ? clientUrl.replace(/\/$/, '') : null;
+  
+  if (
+    origin === normalizedClientUrl ||
+    origin.endsWith('.vercel.app') ||
+    origin.startsWith('http://localhost:') ||
+    origin.startsWith('http://127.0.0.1:')
+  ) {
+    return callback(null, true);
+  }
+  
+  return callback(new Error('Not allowed by CORS'), false);
+};
+
 // Setup Socket.IO
 const io = socketIo(server, {
   cors: {
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: checkOrigin,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
   }
@@ -47,7 +65,7 @@ io.on('connection', (socket) => {
 // Middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: checkOrigin,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
