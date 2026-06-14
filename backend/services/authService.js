@@ -22,33 +22,35 @@ const generateTokens = (admin) => {
 };
 
 const setTokenCookies = (res, accessToken, refreshToken) => {
-  // Access Token: HTTP-only, secure, same-site strict, expires in 15 mins
+  const isProduction = process.env.NODE_ENV === 'production';
+  
   res.cookie('accessToken', accessToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
     maxAge: 15 * 60 * 1000 // 15 minutes
   });
 
-  // Refresh Token: HTTP-only, secure, same-site strict, expires in 7 days
   res.cookie('refreshToken', refreshToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
   });
 };
 
 const clearTokenCookies = (res) => {
+  const isProduction = process.env.NODE_ENV === 'production';
+  
   res.clearCookie('accessToken', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict'
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax'
   });
   res.clearCookie('refreshToken', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict'
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax'
   });
 };
 
