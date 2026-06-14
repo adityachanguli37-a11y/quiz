@@ -22,33 +22,39 @@ const generateTokens = (admin) => {
 };
 
 const setTokenCookies = (res, accessToken, refreshToken) => {
-  // Access Token: HTTP-only, secure, same-site strict, expires in 15 mins
+  const isProduction = process.env.NODE_ENV === 'production';
+  const sameSitePolicy = isProduction ? 'none' : 'strict';
+
+  // Access Token: HTTP-only, secure, same-site none for cross-domain, expires in 15 mins
   res.cookie('accessToken', accessToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    secure: isProduction,
+    sameSite: sameSitePolicy,
     maxAge: 15 * 60 * 1000 // 15 minutes
   });
 
-  // Refresh Token: HTTP-only, secure, same-site strict, expires in 7 days
+  // Refresh Token: HTTP-only, secure, same-site none for cross-domain, expires in 7 days
   res.cookie('refreshToken', refreshToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    secure: isProduction,
+    sameSite: sameSitePolicy,
     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
   });
 };
 
 const clearTokenCookies = (res) => {
+  const isProduction = process.env.NODE_ENV === 'production';
+  const sameSitePolicy = isProduction ? 'none' : 'strict';
+
   res.clearCookie('accessToken', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict'
+    secure: isProduction,
+    sameSite: sameSitePolicy
   });
   res.clearCookie('refreshToken', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict'
+    secure: isProduction,
+    sameSite: sameSitePolicy
   });
 };
 
