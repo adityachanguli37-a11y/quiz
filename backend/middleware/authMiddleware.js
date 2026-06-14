@@ -4,7 +4,15 @@ const { verifyToken, generateTokens, setTokenCookies } = require('../services/au
 
 const protect = async (req, res, next) => {
   let accessToken = req.cookies.accessToken;
-  const refreshToken = req.cookies.refreshToken;
+  let refreshToken = req.cookies.refreshToken;
+
+  // Fallback to headers if cookies are blocked/missing
+  if (!accessToken && req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+    accessToken = req.headers.authorization.split(' ')[1];
+  }
+  if (!refreshToken && req.headers['x-refresh-token']) {
+    refreshToken = req.headers['x-refresh-token'];
+  }
 
   if (!accessToken && !refreshToken) {
     return res.status(401).json({ message: 'Authentication required. Please log in.' });
@@ -42,6 +50,11 @@ const protect = async (req, res, next) => {
 
     // Set new cookies
     setTokenCookies(res, tokens.accessToken, tokens.refreshToken);
+
+    // Set new headers for localstorage fallback
+    res.setHeader('x-new-access-token', tokens.accessToken);
+    res.setHeader('x-new-refresh-token', tokens.refreshToken);
+    res.setHeader('Access-Control-Expose-Headers', 'x-new-access-token, x-new-refresh-token');
 
     req.admin = { id: admin._id, username: admin.username, role: admin.role };
     next();

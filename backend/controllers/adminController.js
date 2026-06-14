@@ -31,7 +31,9 @@ const login = async (req, res, next) => {
 
     res.json({
       username: admin.username,
-      role: admin.role
+      role: admin.role,
+      accessToken,
+      refreshToken
     });
   } catch (error) {
     next(error);

@@ -62,14 +62,26 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (username, password) => {
     const response = await api.post('/auth/login', { username, password });
-    setAdmin(response.data);
-    return response.data;
+    const { accessToken, refreshToken, ...adminData } = response.data;
+    if (accessToken) {
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('refreshToken', refreshToken);
+    }
+    setAdmin(adminData);
+    return adminData;
   };
 
   const logout = async () => {
-    await api.post('/auth/logout');
-    setAdmin(null);
-    setNotifications([]);
+    try {
+      await api.post('/auth/logout');
+    } catch (err) {
+      console.error('Logout request failed:', err);
+    } finally {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      setAdmin(null);
+      setNotifications([]);
+    }
   };
 
   // Toast alert dispatcher
