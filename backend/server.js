@@ -15,10 +15,18 @@ connectDB();
 const app = express();
 const server = http.createServer(app);
 
+const allowDynamicOrigin = (origin, callback) => {
+  if (!origin || origin.includes('localhost') || origin.endsWith('vercel.app') || origin === process.env.CLIENT_URL) {
+    callback(null, true);
+  } else {
+    callback(new Error('Not allowed by CORS'));
+  }
+};
+
 // Setup Socket.IO
 const io = socketIo(server, {
   cors: {
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: allowDynamicOrigin,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
   }
@@ -47,7 +55,7 @@ io.on('connection', (socket) => {
 // Middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: allowDynamicOrigin,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
