@@ -88,7 +88,7 @@ const AdminAttempts = () => {
 
   // Dispatch links for downloads
   const handleExport = (type) => {
-    const baseUrl = 'http://localhost:5000/api/settings/export';
+    const baseUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/settings/export`;
     const queryParams = new URLSearchParams();
     if (quizId) queryParams.append('quizId', quizId);
 

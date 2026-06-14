@@ -52,7 +52,7 @@ const AdminSettings = () => {
   };
 
   const handleDownloadBackup = () => {
-    const backupUrl = 'http://localhost:5000/api/settings/backup';
+    const backupUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/settings/backup`;
     window.open(backupUrl, '_blank');
   };
 
