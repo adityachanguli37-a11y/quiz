@@ -15,7 +15,7 @@ services:
       - key: MONGODB_URI
         value: mongodb+srv://quiz:CyberQuizSecurePass2026@cluster0.n50gfly.mongodb.net/cyber_quiz?retryWrites=true&w=majority
       - key: CLIENT_URL
-        sync: false          # Will be set manually to the Vercel URL
+        value: https://frontend-iota-ten-38.vercel.app
       - key: JWT_ACCESS_SECRET
         generateValue: true
       - key: JWT_REFRESH_SECRET
